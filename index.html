@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Informações de Voos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Adicionando o ícone -->
+    <link rel="icon" type="image/x-icon" href="aviao.png">
+</head>
+
+<body>
+    <nav>
+        <i class="fas fa-plane"></i>
+        <h1>Companhia Aérea</h1>
+    </nav>
+    <textarea id="lista-voo" rows="4" cols="50">Rio de Janeiro x São Paulo;50
+São Paulo x Maringá;55
+Porto Alegre x Salvador;180
+Belo Horizonte x Rio de Janeiro;65
+Manaus x Cuiaba;70</textarea>
+    <br>
+    <textarea id="lista-aeronave" rows="4" cols="50">AER001-AIRBUS
+AER002-BOING
+AER1010-EMBRAER</textarea>
+    <br>
+    <button onclick="gerarTabela()">Gerar Tabela</button>
+
+    <table id="tabela-voos" border="1">
+        <thead>
+            <tr>
+                <th>Voo</th>
+                <th>Aeronave</th>
+                <th>Minutos de Duração</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div id="estatisticas"></div>
+
+    
+    <script>
+
+function vooController() {
+    let textAreaVoo = document.getElementById("lista-voo");
+    let conteudoVoo = textAreaVoo.value;
+  
+    let textAreaAeronave = document.getElementById("lista-aeronave");
+    let conteudoAeronave = textAreaAeronave.value;
+  
+    let linhasVoo = conteudoVoo.split("\n");
+    let linhasAeronave = conteudoAeronave.split("\n");
+  
+    let listaVoo = {
+      voo: [],
+      aeronave: [],
+      minuto: [],
+    };
+  
+    linhasVoo.forEach((linha) => {
+      let index = linha.indexOf(";");
+      let minuto = linha.slice(index + 1);
+      let destino = linha.slice(0, index);
+  
+      let aeronaveAleatoria = Math.floor(Math.random() * linhasAeronave.length);
+  
+      if (minuto && destino && linhasAeronave[aeronaveAleatoria]) {
+        listaVoo.voo.push(destino);
+        listaVoo.aeronave.push(linhasAeronave[aeronaveAleatoria]);
+        listaVoo.minuto.push(minuto);
+      }
+    });
+  
+    return listaVoo;
+  }
+  
+  
+//   FUNÇÃO PARA EXIBIR OS CÓDIGOS NO HTML
+
+
+        function gerarTabela() {
+            let listaVoo = vooController();
+
+            let tabela = document.getElementById("tabela-voos");
+            let tbody = tabela.getElementsByTagName("tbody")[0];
+
+            let estatisticasDiv = document.getElementById("estatisticas");
+            estatisticasDiv.innerHTML = "";
+
+            let aeronaveEstatisticas = {};
+
+            for (let i = 0; i < listaVoo.voo.length; i++) {
+                let linha = document.createElement("tr");
+
+                let colunaVoo = document.createElement("td");
+                colunaVoo.textContent = listaVoo.voo[i];
+                linha.appendChild(colunaVoo);
+
+                let colunaAeronave = document.createElement("td");
+                colunaAeronave.textContent = listaVoo.aeronave[i];
+                linha.appendChild(colunaAeronave);
+
+                let colunaMinuto = document.createElement("td");
+                colunaMinuto.textContent = listaVoo.minuto[i];
+                linha.appendChild(colunaMinuto);
+
+                tbody.appendChild(linha);
+
+                // Atualizar estatísticas
+                let aeronave = listaVoo.aeronave[i];
+                let minutos = parseInt(listaVoo.minuto[i]);
+
+                if (aeronaveEstatisticas[aeronave]) {
+                    aeronaveEstatisticas[aeronave].voos++;
+                    aeronaveEstatisticas[aeronave].minutos += minutos;
+                } else {
+                    aeronaveEstatisticas[aeronave] = { voos: 1, minutos: minutos };
+                }
+            }
+
+            // Mostrar estatísticas
+            let estatisticasTexto = "<h2>Estatísticas Recentes</h2>";
+            estatisticasTexto += "<ul>";
+
+            for (let aeronave in aeronaveEstatisticas) {
+                estatisticasTexto += "<li>Aeronave " + aeronave + " realizou " + aeronaveEstatisticas[aeronave].voos + " voos, totalizando " + aeronaveEstatisticas[aeronave].minutos + " minutos de voo</li>";
+            }
+
+            estatisticasTexto += "</ul>";
+
+            estatisticasDiv.innerHTML = estatisticasTexto;
+        }
+    </script>
+</body>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    nav {
+        display: flex;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+
+    nav i {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    nav h1 {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4c6faf;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #02236b;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    h2 {
+        margin-top: 20px;
+        font-size: 20px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .estatisticas-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .estatisticas-table th,
+    .estatisticas-table td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .estatisticas-table th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+</html>
